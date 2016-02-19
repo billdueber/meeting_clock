@@ -1,0 +1,25 @@
+doctype html
+html
+  head
+    title LIT Meeting Clock
+    meta name="keywords" content="template language"
+    meta name="author" content="Bill Dueber"
+    
+    css:
+      #total { font-size: 400% }
+
+  body
+    h1 LIT Meeting Clock
+    div#total
+      | $
+      span#amount 0.00
+      
+    - for division_name in data.keys.sort
+      - division = data[division_name]
+      div#divisons
+        div.division
+          div.title= division_name
+          - for person in division
+            div.person data-salary="#{person.minute_salary}"
+              = person.name
+        

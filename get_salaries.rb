@@ -1,7 +1,7 @@
 # LIT Salary URLs
 
 require 'nokogiri'
-require 'httpclient'
+require 'open-uri'
 
 urls = %w[
 http://www.umsalary.info/deptsearch.php?Dept=Library+Info+Tech+-+Core+Svcs&Year=0&Campus=1
@@ -15,7 +15,7 @@ http://www.umsalary.info/deptsearch.php?Dept=Library+Info+Tech-+LTIG&Year=0&Camp
 
 
 def getem(url)
-  doc = Nokogiri::HTML(HTTPClient.new.get_content(url))
+  doc = Nokogiri::HTML(open(url).read)
   salary_table =  doc.css('table')[2]
   salary_table.css('tr').each do |row|
     first_cell = row.css('td').first

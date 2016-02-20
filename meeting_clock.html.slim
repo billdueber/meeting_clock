@@ -4,22 +4,212 @@ html
     title LIT Meeting Clock
     meta name="keywords" content="template language"
     meta name="author" content="Bill Dueber"
-    
+
     css:
-      #total { font-size: 400% }
+
+      body {
+        padding: 2em;
+      }
+      #total {
+        font-size: 400%
+      }
+
+      .tagline {
+        font-size: 40%;
+      }
+
+      .person {
+        display: block;
+        padding: 0.2em;
+        border: 1pt solid black;
+        cursor: pointer;
+      }
+
+      .here {
+        background-color: #fdd;
+      }
+
+      #pause {
+        width: 20%;
+      }
+
+      .other_button {
+        width: 10%;
+        margin-left: 10%;
+      }
+
+      .paused {
+        background-color: #cfc
+      }
+
+      .running {
+        background-color: #ff9999;
+      }
+
+      #header {
+        padding-left: 15px;
+      }
+      #pagename {
+        font-size: 200%;
+        float: right;
+        width: 40%;
+      }
+
+      .cost {
+        padding-left: 2em;
+      }
+
+      #amount {
+        padding-right: 1em
+      }
+
+      #divisions {;
+        -webkit-column-count: 5;
+        -moz-column-count: 5;
+        -ms-column-count: 5;
+        -o-column-count: 5;
+        column-count: 5;
+        -webkit-column-gap: 15px;
+        -moz-column-gap: 15px;
+        -ms-column-gap: 15px;
+        -o-column-gap: 15px;
+        column-gap: 15px;
+        columns: 4
+      }
+
+      .division {
+        padding: 1em;
+        display: inline-block
+      }
+
+      .division .title {
+        background-color: blue;
+        color: white;
+        padding: 0.25em;
+        text-align: center;
+        cursor: pointer;
+      }
+
+      .division .title:hover {
+        background-color: #88f;
+      }
+
+
+
+
+
+
+    script src="minified.js"
+    javascript:
+      //Load minified and get aliases
+      var MINI = require('minified');
+      var _ = MINI._, $ = MINI.$, $$ = MINI.$$, EE = MINI.EE, HTML = MINI.HTML;
+
+      function update_total() {
+        var here = $('.here')
+        var amount = $('#amount')
+        var current_total = parseFloat(amount.text())
+        var total_this_second = 0.0
+        for (var i = 0; i < here.length; i++) {
+          total_this_second += parseFloat($(here[i]).get('%salary'))
+        }
+        current_total += total_this_second
+        var total_per_minute = total_this_second * 60.0
+        var total_per_hour = total_per_minute * 60.0
+
+        var total = _.formatValue('##.#0', current_total)
+        var second = _.formatValue('##.#0', total_this_second)
+        var minute = _.formatValue('##.#0', total_per_minute)
+        var hour = _.formatValue('##.#0', total_per_hour)
+
+        $('#hour').fill('$' + hour + ' per hour')
+        $('#minute').fill('$' + minute + ' per minute')
+        $('#second').fill('$' + second + ' per second')
+
+        if (paused()) {
+          return
+        }
+        amount.fill(total)
+      }
+
+      function toggle_presence(who) {
+        $(who).set('here')
+        update_total()
+      }
+
+      function paused() {
+        return  $('#pause').is('.paused')
+      }
+
+      function toggle_pause_button() {
+        var pause_button = $('#pause')
+        pause_button.set('paused')
+        pause_button.set('running')
+        if (paused()) {
+          pause_button.fill('Start')
+        } else {
+          pause_button.fill("Pause")
+        }
+      }
+
+      function reset() {
+        if (!confirm("Really reset it all to zeros?")) {
+          return
+        }
+        if (!paused()) {
+          toggle_pause_button();
+        }
+        $('.here').set('-here')
+        $('#amount').fill('0.00')
+        update_total()
+      }
+
+
+      function people_in(division) {
+        var d = $(division).up('.division')
+        var people = $('.person', d, false)
+        return people
+
+      }
+      function turn_on_division(division) {
+        people_in(division).set('+here')
+      }
+
+      $(function () {
+        setInterval("update_total()", 1000)
+
+      })()
+
 
   body
-    h1 LIT Meeting Clock
-    div#total
-      | $
-      span#amount 0.00
-      
-    - for division_name in data.keys.sort
-      - division = data[division_name]
-      div#divisons
+
+    div#header
+      div#pagename
+        div.pagetitle LIT Meeting Clock
+        div.tagline
+          = "Using data from "
+          a href="http://www.umsalary.info/" http://www.umsalary.info/
+      div#total
+        | $
+        span#amount 0.00
+        | total
+
+      div#per
+        span#hour $0.00 per hour
+        span#minute.cost $0.00 per minute
+        span#second.cost $0.00 per second
+
+      div
+        button#pause.paused onClick="toggle_pause_button();" Start
+        button#reset.other_button onClick="reset();" Reset
+
+    div#divisions
+      - for division_name in data.keys.sort
+        - division = data[division_name]
         div.division
-          div.title= division_name
+          div.title title="Select everyone in the division" onclick="turn_on_division(this);"
+            = division_name
           - for person in division
-            div.person data-salary="#{person.minute_salary}"
+            div.person data-salary="#{person.second_salary}" onClick="toggle_presence(this)"
               = person.name
         

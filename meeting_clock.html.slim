@@ -106,25 +106,27 @@ html
       var _ = MINI._, $ = MINI.$, $$ = MINI.$$, EE = MINI.EE, HTML = MINI.HTML;
 
       function update_total() {
-        var here = $('.here')
-        var amount = $('#amount')
-        var current_total = parseFloat(amount.text())
-        var total_this_second = 0.0
+        var here = $('.here');
+        var amount = $('#amount');
+        var current_total = parseFloat(amount.text());
+        var total_this_second = 0.0;
         for (var i = 0; i < here.length; i++) {
           total_this_second += parseFloat($(here[i]).get('%salary'))
         }
-        current_total += total_this_second
-        var total_per_minute = total_this_second * 60.0
-        var total_per_hour = total_per_minute * 60.0
+        current_total += total_this_second;
+        var total_per_minute = total_this_second * 60.0;
+        var total_per_hour = total_per_minute * 60.0;
 
-        var total = _.formatValue('##.#0', current_total)
-        var second = _.formatValue('##.#0', total_this_second)
-        var minute = _.formatValue('##.#0', total_per_minute)
-        var hour = _.formatValue('##.#0', total_per_hour)
+        var total = _.formatValue('##.#0', current_total);
+        var second = _.formatValue('##.#0', total_this_second);
+        var minute = _.formatValue('##.#0', total_per_minute);
+        var hour = _.formatValue('##.#0', total_per_hour);
 
-        $('#hour').fill('$' + hour + ' per hour')
-        $('#minute').fill('$' + minute + ' per minute')
-        $('#second').fill('$' + second + ' per second')
+
+        $('#hour').fill('$' + hour + ' per hour');
+        $('#minute').fill('$' + minute + ' per minute');
+        $('#second').fill('$' + second + ' per second');
+        $('#totalpeople').fill(here.length + ' attendees');
 
         if (paused()) {
           return
@@ -133,7 +135,7 @@ html
       }
 
       function toggle_presence(who) {
-        $(who).set('here')
+        $(who).set('here');
         update_total()
       }
 
@@ -142,9 +144,9 @@ html
       }
 
       function toggle_pause_button() {
-        var pause_button = $('#pause')
-        pause_button.set('paused')
-        pause_button.set('running')
+        var pause_button = $('#pause');
+        pause_button.set('paused');
+        pause_button.set('running');
         if (paused()) {
           pause_button.fill('Start')
         } else {
@@ -159,15 +161,15 @@ html
         if (!paused()) {
           toggle_pause_button();
         }
-        $('.here').set('-here')
-        $('#amount').fill('0.00')
+        $('.here').set('-here');
+        $('#amount').fill('0.00');
         update_total()
       }
 
 
       function people_in(division) {
-        var d = $(division).up('.division')
-        var people = $('.person', d, false)
+        var d = $(division).up('.division');
+        var people = $('.person', d, false);
         return people
 
       }
@@ -198,6 +200,7 @@ html
         span#hour $0.00 per hour
         span#minute.cost $0.00 per minute
         span#second.cost $0.00 per second
+        span#totalpeople.cost    0 attendees
 
       div
         button#pause.paused onClick="toggle_pause_button();" Start
